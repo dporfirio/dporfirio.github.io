@@ -1,0 +1,24 @@
+@charset "UTF-8";
+/* CSS Document */
+
+h1 {
+  font-family: "Helvetica", Helvetica, sans-serif;
+  text-align: center;
+  font-weight: lighter;
+}
+
+h2 {
+  font-family: "Helvetica", Helvetica, sans-serif;
+  text-align: center;
+  font-weight: lighter;
+  font-size: 12px;
+}
+
+div {
+  margin: auto;
+  width: 50%;
+}
+
+text {
+  font-family: "Helvetica", Helvetica, sans-serif;
+}
