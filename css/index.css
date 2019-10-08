@@ -15,15 +15,25 @@ h2 {
 	font-weight: lighter;
 	font-size: 24px;
 	color: darkslategray;
+	margin-bottom:-10px;
 	
 }
-
 h3 {
 	font-family: "Helvetica", Helvetica, sans-serif;
 	text-align: center;
 	font-weight: lighter;
 	font-size: 12px;
 	color: darkslategray;
+}
+
+h4 {
+	font-family: "Helvetica", Helvetica, sans-serif;
+	text-align: left;
+	font-weight: lighter;
+	font-size: 16px;
+	font-style: italic;
+	color: darkslategray;
+	margin-bottom:-2px;
 }
 
 hr {
