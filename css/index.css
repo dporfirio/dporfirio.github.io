@@ -57,3 +57,25 @@ text {
 	font-weight: lighter;
 	line-height: 1.6;
 }
+
+.column_left {
+  display: flex;
+  float: left;
+  width: 30%;
+}
+
+.column_right { 
+  width: 70%;
+  float: right;
+}
+
+.row {
+	width: 60%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
