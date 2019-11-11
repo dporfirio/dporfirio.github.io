@@ -82,6 +82,7 @@ text {
 
 .row {
 	width: 60%;
+	max-width: 1000px;
 }
 
 /* Clear floats after the columns */
