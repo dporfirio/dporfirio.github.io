@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 640 480" style="enable-background:new 0 0 640 480;" xml:space="preserve">
+<style type="text/css">
+	._x0024_Dining_x0020_Room{fill:#C2B59B;}
+	._x0024_Kitchen{fill:#C2B59B;}
+	._x0024_Living_x0020_Room{fill:#D1D3D4;}
+	._x0024_Closet{fill:#4C381D;}
+	._x0024_Counter{fill:#E0E0E0;}
+	._x0024_Coffee_x0020_Table{opacity:0.47;fill:#515254;stroke:#632F11;stroke-width:12;stroke-miterlimit:10;}
+	._x0024_Refridgerator{}
+	._x0024_Sink{}
+	._x0024_Table{fill:#713907;}
+	._x0024_Chair{fill:#713907;}
+	._x0024_Coffee_x0020_Maker{fill:#414042;}
+	._x0024_Entrance{fill:#C2B59B;}
+	._x0024_Front_x0020_Door{opacity:0.47;fill:#515254;}
+	._x0024_Garage_x0020_Door{opacity:0.47;fill:#515254;}
+	._x0024_Television{fill:#231F20;}
+	._x0024_Couch{fill:#E2E3E4;stroke:#6D6E70;stroke-width:5.384;stroke-miterlimit:10;}
+	._x0024_Stove{}
+	.Staircase{fill:url(#SVGID_1_);}
+	.st0{fill:#C3996B;stroke:#6D6E70;stroke-width:5.384;stroke-miterlimit:10;}
+	.st1{fill:#E6E7E8;}
+	.st2{fill:#AAACAF;}
+	.st3{fill:#FFFFFF;}
+	.st4{fill:#6D6E70;}
+	.st5{fill:#4E4F51;}
+	.st6{clip-path:url(#SVGID_3_);fill:#C2B59B;}
+	.st7{clip-path:url(#SVGID_5_);fill:#C2B59B;}
+	.st8{fill:#515254;}
+	.st9{fill:#C2B59B;}
+	.st10{fill:none;stroke:#58595B;stroke-width:4;stroke-miterlimit:10;}
+	._x0024_Staircase{fill:url(#SVGID_8_);}
+
+	svg text {
+		display: none;
+	}
+	svg g:hover text {
+		display: block;
+		font-size: 28px;
+		font-family: sans-serif;
+		background-color: #222DDF;
+	}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="6.123234e-17" y2="-1">
+	<stop  offset="0.2931" style="stop-color:#C2B59B;stop-opacity:0"/>
+	<stop  offset="0.3062" style="stop-color:#BAAE95;stop-opacity:0.0187"/>
+	<stop  offset="0.3995" style="stop-color:#89806E;stop-opacity:0.1508"/>
+	<stop  offset="0.4951" style="stop-color:#5F594C;stop-opacity:0.2863"/>
+	<stop  offset="0.5916" style="stop-color:#3D3931;stop-opacity:0.423"/>
+	<stop  offset="0.6892" style="stop-color:#22201B;stop-opacity:0.5614"/>
+	<stop  offset="0.7884" style="stop-color:#0F0E0C;stop-opacity:0.702"/>
+	<stop  offset="0.8903" style="stop-color:#040303;stop-opacity:0.8464"/>
+	<stop  offset="0.9987" style="stop-color:#000000"/>
+</linearGradient>
+<g>
+	<rect y="171.59" class="_x0024_Living_x0020_Room" width="640" height="308.41"/>
+	<text x="200" y="215">Living Room</text>
+</g>
+<g>
+	<rect x="305.94" y="0" class="_x0024_Kitchen" width="334.06" height="171.59"/>
+	<text x="200" y="215">Kitchen</text>
+</g>
+<g>
+	<rect class="_x0024_Dining_x0020_Room" width="305.94" height="171.59"/>
+	<text x="200" y="215">Dining Room</text>
+</g>
+<g>
+	<rect y="85.79" class="_x0024_Closet" width="140.06" height="85.79"/>
+	<text x="200" y="215">Closet</text>
+</g>
+<g>
+	<rect x="432.12" class="_x0024_Counter" width="207.88" height="34.29"/>
+	<text x="200" y="215">Counter</text>
+</g>
+<g>
+	<rect x="554.21" y="85.79" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 725.7941 -519.9117)" class="_x0024_Counter" width="137.29" height="34.29"/>
+	<rect x="459.79" y="25.68" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 631.3823 -344.3235)" class="_x0024_Counter" width="56.12" height="235.71"/>
+	<text x="200" y="215">Counter</text>
+</g>
+<g>
+	<path class="st0" d="M392.05,455.61H367.2c-13.07,0-23.66-10.59-23.66-23.66V275.01c0-13.07,10.59-23.66,23.66-23.66h24.85
+		c13.07,0,23.66,10.59,23.66,23.66v156.93C415.72,445.01,405.12,455.61,392.05,455.61z"/>
+	<path class="_x0024_Couch" d="M406.01,259.31c-8.23-2.3-15.25-1.75-23.24-1.06c-8.65,0.75-8.77,1.76-15.49,1.76
+		c-5.56,0-7.26-0.68-9.15,0.7c-2.7,1.97-2.37,5.63-2.46,17.6c-0.08,11.15-0.13,16.73-0.35,19.72c-0.58,7.61-1.47,11.35,0.35,16.9
+		c0.79,2.42,1.66,5.05,3.87,7.39c3.53,3.73,7.29,3.35,26.76,4.93c8.25,0.67,11.2,1.03,16.2,0.35c6.11-0.83,9.16-1.25,11.62-3.17
+		c6.52-5.11,1.35-14.06,3.17-37.32c0.94-11.99,3-18.38-1.41-23.24C413.65,261.44,410.99,260.7,406.01,259.31z"/>
+	<path class="_x0024_Couch" d="M409.1,262h-56.23c-3.66,0-6.62-2.96-6.62-6.62v-4.07c0-3.66,2.96-6.62,6.62-6.62h56.23
+		c3.66,0,6.62,2.96,6.62,6.62v4.07C415.72,259.04,412.75,262,409.1,262z"/>
+	<path class="_x0024_Couch" d="M406.01,320.72c-8.23-2.3-15.25-1.75-23.24-1.06c-8.65,0.75-8.77,1.76-15.49,1.76
+		c-5.56,0-7.26-0.68-9.15,0.7c-2.7,1.97-2.37,5.63-2.46,17.6c-0.08,11.15-0.13,16.73-0.35,19.72c-0.58,7.61-1.47,11.35,0.35,16.9
+		c0.79,2.42,1.66,5.05,3.87,7.39c3.53,3.73,7.29,3.35,26.76,4.93c8.25,0.67,11.2,1.03,16.2,0.35c6.11-0.83,9.16-1.25,11.62-3.17
+		c6.52-5.11,1.35-14.06,3.17-37.32c0.94-11.99,3-18.38-1.41-23.24C413.65,322.86,410.99,322.12,406.01,320.72z"/>
+	<path class="_x0024_Couch" d="M406.38,384.52c-8.23-2.3-15.25-1.75-23.24-1.06c-8.65,0.75-8.77,1.76-15.49,1.76
+		c-5.56,0-7.26-0.68-9.15,0.7c-2.7,1.97-2.37,5.63-2.46,17.6c-0.08,11.15-0.13,16.73-0.35,19.72c-0.58,7.61-1.47,11.35,0.35,16.9
+		c0.79,2.42,1.66,5.05,3.87,7.39c3.53,3.73,7.29,3.35,26.76,4.93c8.25,0.67,11.2,1.03,16.2,0.35c6.11-0.83,9.16-1.25,11.62-3.17
+		c6.52-5.11,1.35-14.06,3.17-37.32c0.94-11.99,3-18.38-1.41-23.24C414.02,386.65,411.36,385.91,406.38,384.52z"/>
+	<path class="_x0024_Couch" d="M405.87,456.23h-56.23c-3.66,0-6.62-2.96-6.62-6.62v-4.07c0-3.66,2.96-6.62,6.62-6.62h56.23
+		c3.66,0,6.62,2.96,6.62,6.62v4.07C412.49,453.27,409.53,456.23,405.87,456.23z"/>
+	<path class="_x0024_Couch" d="M347.35,451.35h-5.44c-4.89,0-8.85-3.96-8.85-8.85V257.31c0-4.89,3.96-8.85,8.85-8.85h5.44
+		c4.89,0,8.85,3.96,8.85,8.85v185.18C356.2,447.38,352.24,451.35,347.35,451.35z"/>
+	<path class="_x0024_Coffee_x0020_Table" d="M537.26,431.58h-53.5c-2.84,0-5.14-2.3-5.14-5.14V280.51c0-2.84,2.3-5.14,5.14-5.14h53.5
+		c2.84,0,5.14,2.3,5.14,5.14v145.93C542.41,429.28,540.1,431.58,537.26,431.58z"/>
+	<text x="200" y="215">Couch</text>
+</g>
+<g class="_x0024_Refridgerator">
+	<path class="st1" d="M374.09,40.07c-2.49,0-4.52-2.03-4.52-4.52V10.39c0-2.49,2.03-4.52,4.52-4.52h47.04
+		c2.49,0,4.52,2.03,4.52,4.52v25.17c0,2.49-2.03,4.52-4.52,4.52H374.09z"/>
+	<path class="st2" d="M421.13,8.97c0.78,0,1.41,0.63,1.41,1.41v25.17c0,0.78-0.63,1.41-1.41,1.41h-47.04
+		c-0.78,0-1.41-0.63-1.41-1.41V10.39c0-0.78,0.63-1.41,1.41-1.41H421.13 M421.13,2.77h-47.04c-4.21,0-7.62,3.41-7.62,7.62v25.17
+		c0,4.21,3.41,7.62,7.62,7.62h47.04c4.21,0,7.62-3.41,7.62-7.62V10.39C428.75,6.18,425.34,2.77,421.13,2.77L421.13,2.77z"/>
+	<text x="200" y="215">Refridgerator</text>
+</g>
+<g class="_x0024_Sink">
+	<rect x="478.58" y="124.05" class="st3" width="47.95" height="38.97"/>
+	<path class="st4" d="M523.53,127.05v32.97h-41.95v-32.97H523.53 M529.53,121.05h-53.95v44.97h53.95V121.05L529.53,121.05z"/>
+	<text x="200" y="215">Sink</text>
+</g>
+<g>
+	<path class="_x0024_Table" d="M275.34,136.25h-43.94c-12.79,0-23.15-10.36-23.15-23.15V69.16c0-12.79,10.36-23.15,23.15-23.15h43.94
+	c12.79,0,23.15,10.36,23.15,23.15v43.94C298.49,125.88,288.13,136.25,275.34,136.25z"/>
+	<text x="200" y="215">Table</text>
+</g>
+<g>
+	<polygon class="_x0024_Chair" points="268.26,42.3 237.57,42.3 240.16,11.61 266.22,11.61 "/>
+	<polygon class="_x0024_Chair" points="336.35,112.49 305.66,115.06 305.66,84.37 336.35,86.43 "/>
+	<polygon class="_x0024_Chair" points="256.06,171.59 230.16,168.52 231.17,138.5 261.7,141.57 "/>
+	<polygon class="_x0024_Chair" points="178.63,103.84 178.63,77.26 209.32,75.2 209.32,105.89 "/>
+	<text x="200" y="215">Chair</text>
+</g>
+<g>
+	<path class="_x0024_Coffee_x0020_Maker" d="M399.5,160.35h-16.91c-1.58,0-2.81-1.37-2.64-2.95l2.85-26.34
+	c0.15-1.35,1.29-2.37,2.64-2.37h11.12c1.35,0,2.49,1.02,2.64,2.36l2.94,26.34C402.32,158.97,401.08,160.35,399.5,160.35z"/>
+	<text x="200" y="215">Coffee Maker</text>
+</g>
+<g class="_x0024_Stove">
+	<rect x="607.71" y="62.17" class="st3" width="30.29" height="39.03"/>
+	<path class="st4" d="M636,64.17v35.03h-26.29V64.17H636 M640,60.17h-34.29v43.03H640V60.17L640,60.17z"/>
+	<text x="200" y="215">Stove</text>
+</g>
+<circle class="st5" cx="617.65" cy="70.51" r="5.2"/>
+<circle class="st5" cx="630.61" cy="74.4" r="3.89"/>
+<circle class="st5" cx="617.65" cy="92.22" r="5.2"/>
+<g>
+	<g>
+		<defs>
+			<rect id="SVGID_2_" x="138.06" y="372.76" width="115.32" height="107.24"/>
+		</defs>
+		<clipPath id="SVGID_3_">
+			<use xlink:href="#SVGID_2_"  style="overflow:visible;"/>
+		</clipPath>
+		<path class="st6" d="M225.78,495.12h-88c-15.24,0-27.6-12.36-27.6-27.6v-67.15c0-15.24,12.36-27.6,27.6-27.6h88
+			c15.24,0,27.6,12.36,27.6,27.6v67.15C253.38,482.76,241.02,495.12,225.78,495.12z"/>
+	</g>
+	<g>
+		<defs>
+			<rect id="SVGID_4_" x="138.06" y="372.76" width="115.32" height="107.24"/>
+		</defs>
+		<clipPath id="SVGID_5_">
+			<use xlink:href="#SVGID_4_"  style="overflow:visible;"/>
+		</clipPath>
+		<path class="st7" d="M225.78,495.12h-88c-15.24,0-27.6-12.36-27.6-27.6v-67.15c0-15.24,12.36-27.6,27.6-27.6h88
+			c15.24,0,27.6,12.36,27.6,27.6v67.15C253.38,482.76,241.02,495.12,225.78,495.12z"/>
+	</g>
+	<g>
+		<defs>
+			<rect id="SVGID_6_" x="138.06" y="372.76" width="115.32" height="107.24"/>
+		</defs>
+		<clipPath id="SVGID_7_">
+			<use xlink:href="#SVGID_6_"  style="overflow:visible;"/>
+		</clipPath>
+	</g>
+</g>
+<circle class="st5" cx="630.61" cy="88.33" r="3.89"/>
+<g>
+	<rect x="156.29" y="438.12" class="_x0024_Front_x0020_Door" width="65.88" height="39.58"/>
+	<text x="200" y="215">Front Door</text>
+</g>
+<g>
+	<rect x="-9.5" y="23.39" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 66.6176 19.7353)" class="_x0024_Garage_x0020_Door" width="65.88" height="39.58"/>
+	<text x="200" y="215">Garage Door</text>
+</g>
+<rect x="605.71" y="257.65" class="st8" width="34.29" height="189.93"/>
+<g>
+	<rect x="617.65" y="266.18" class="_x0024_Television" width="9.07" height="167.76"/>
+	<text x="200" y="215">Television</text>
+</g>
+<rect y="171.59" class="st9" width="140.06" height="308.41"/>
+<line class="st10" x1="0" y1="419.32" x2="140.06" y2="419.32"/>
+<line class="st10" x1="0" y1="384.04" x2="140.06" y2="384.04"/>
+<line class="st10" x1="0" y1="348.76" x2="140.06" y2="348.76"/>
+<line class="st10" x1="0" y1="313.47" x2="140.06" y2="313.47"/>
+<line class="st10" x1="0" y1="278.19" x2="140.06" y2="278.19"/>
+<line class="st10" x1="0" y1="242.9" x2="140.06" y2="242.9"/>
+<line class="st10" x1="0" y1="207.62" x2="140.06" y2="207.62"/>
+<line class="st10" x1="0" y1="174.33" x2="140.06" y2="174.33"/>
+<line class="st10" x1="138.06" y1="419.32" x2="138.06" y2="172.33"/>
+<linearGradient id="SVGID_8_" gradientUnits="userSpaceOnUse" x1="70.0294" y1="480" x2="70.0294" y2="171.5882">
+	<stop  offset="0.2931" style="stop-color:#C2B59B;stop-opacity:0"/>
+	<stop  offset="0.3062" style="stop-color:#BAAE95;stop-opacity:0.0187"/>
+	<stop  offset="0.3995" style="stop-color:#89806E;stop-opacity:0.1508"/>
+	<stop  offset="0.4951" style="stop-color:#5F594C;stop-opacity:0.2863"/>
+	<stop  offset="0.5916" style="stop-color:#3D3931;stop-opacity:0.423"/>
+	<stop  offset="0.6892" style="stop-color:#22201B;stop-opacity:0.5614"/>
+	<stop  offset="0.7884" style="stop-color:#0F0E0C;stop-opacity:0.702"/>
+	<stop  offset="0.8903" style="stop-color:#040303;stop-opacity:0.8464"/>
+	<stop  offset="0.9987" style="stop-color:#000000"/>
+</linearGradient>
+<g>
+	<rect x="0" y="171.59" class="_x0024_Staircase" width="140.06" height="308.41"/>
+	<text x="200" y="215">Staircase</text>
+</g>
+</svg>

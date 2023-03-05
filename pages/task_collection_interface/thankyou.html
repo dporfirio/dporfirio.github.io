@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="tutorial.css">
+</head>
+<body>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/8.2.7/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="/__/firebase/8.2.7/firebase-auth.js"></script>
+  <script src="/__/firebase/8.2.7/firebase-database.js"></script>
+
+  <!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
+</body>
+</html>
+
+<div style="width:60%;margin:auto;">
+  <h3>
+    Thank you for participation! Please enter the following completion code into Mechanical Turk:
+    <br><br>
+    <div id="confirmation_code">
+    </div>
+  </h3>
+</div>
+<br>
+<div style="border:1px;border-color:#000000;width:60%;margin:auto;background-color:#DDDDDD;padding:8px">
+  <div>
+    <h3 style="font-weight:normal;">
+      If you would like to give us feedback (optional):
+    <h3>
+    <text style="font-weight:normal; font-size:18px;">
+      We created this website ourselves, so we appreciate any feedback! You can submit feedback below:
+    </text>
+  </div>
+  <div style="width:60%;margin:auto;">
+    <textarea id="feedback" style="width:300px;height:200px;font-size:14px;margin:auto;display:block;margin-bottom:10px;">
+    </textarea>
+  </div>
+  <div style="width:60%;margin:auto;">
+    <button onclick='sendFeedback()' style="margin:auto;display:block;width:auto;cursor:pointer">
+      submit feedback
+    </button>
+  </div>
+</div>
+
+<script>
+  // try to access firebase
+  try {
+    var database = firebase.database();
+  }
+  catch(err) {
+    console.log("could not access firebase")
+  }
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  var uid;
+  if (urlParams.has("uid")) {
+    uid = urlParams.get('uid')
+  } 
+  else {
+    uid = "-2";
+  }
+
+  var confirmationSlot = document.getElementById("confirmation_code");
+  confirmationSlot.innerHTML=uid + "<br><br>Once you copy the completion code, you may close this tab.";
+
+  function sendFeedback() {
+    var feedbackArea = document.getElementById("feedback");
+
+    var text = feedbackArea.value;
+    try {
+      firebase.database().ref("data/" + uid).update({
+        feedback: text
+      });
+    }
+    catch(err) {
+      console.log("could not write to firebase")
+    }
+
+    alert("Your feedback has been sent to the study team. Thank you! You can close this window at any time.");
+    feedbackArea.value = "";
+  }
+</script>

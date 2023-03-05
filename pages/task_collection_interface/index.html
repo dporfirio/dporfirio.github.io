@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!--favicon location-->
+  <link rel="shortcut icon" href="/static/favicon.ico">
+
+  <!--CSS-->
+  <link rel="stylesheet" type="text/css"href="main.css">
+</head>
+<body>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/8.2.7/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="/__/firebase/8.2.7/firebase-auth.js"></script>
+  <script src="/__/firebase/8.2.7/firebase-database.js"></script>
+
+  <!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
+
+  <!-- Get all scenarios and commands -->
+  <script src="scenarios.js"></script>
+  <script src="commands.js"></script>
+</body>
+</html>
+<!--The timeline of commands specified by the user-->
+<div class="main_layout">
+  <div class="toolpane">
+    <!--The commands available to the user the user-->
+    <h1 id="avail_step_label" class="tooltip" style="margin-top:5px">Toolbox
+      <span class="tooltiptext">
+        click on the buttons below to add steps to your task
+      </span>
+    </h1>
+    <div class="avail_step_container" id="avail_step_container">
+    </div>
+  </div>
+  <div class="editor">
+    <div class="prompt_container">
+      <div id="prompt_graphic" class="prompt_graphic_pane">
+        <h1 id="avail_step_label" class="tooltip" style="margin-top:5px">Layout of Home
+          <span class="tooltiptext">
+            hover over objects in the home to learn their identities
+          </span>
+        </h1>
+        <object data="HouseLayoutTooltipBase-01.svg" alt="The layout of the home in which the task is performed." id="svg" style="display:block; max-height:calc(100% - 38px);min-width:300px;"></object>
+      </div>
+      <div id="prompt" class="prompt_pane">
+        <h1 id="prompt_label" class="tooltip" style="margin-top:5px">Prompt (Task 1 out of 3)
+          <span class="tooltiptext">
+            Please follow these instructions.
+          </span>
+        </h1>
+        <div class="prompt_text_container" style="display:flex;">
+          <div class="prompt_text" style="display:flex;" id="prompt_text">
+          
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h1 id="timeline_label" class="tooltip">Task Timeline
+          <span class="tooltiptext">
+            the steps you have placed in your task are shown from left to right
+          </span>
+        </h1>
+    <div class="timeline_grid">
+
+      <!-- overview -->
+      <div id="history_pane" class="history_pane">
+        <div id="history" class="history">
+
+        </div>
+      </div>
+
+      <!--The timeline of commands specified by the user-->
+      <div>
+        <div class="timeline_pane" ondragover="allowDrop(event)">
+          <div id="timeline"  class="timeline"/>
+
+        </div>
+      </div>
+
+    </div>
+
+    <h3 id="task_counter">
+      Task 1/3
+    </h3>
+
+    <!--Record task to database and clear timeline-->
+    <div >
+      <button id="done_button" class="control_button">
+        submit
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div id="tooltipDiv" style='background:white;padding:5px;position:absolute;top:0px;left:0px;visibility:hidden'></div>
+
+<script>
+
+  // available colors
+  var colors = ["#c65839", "#ac537d", "#8a6897", "#5683a9", "#699c63", "#a1815e", "#bb447b", "#73768c"];
+  var currColor = 0;
+  var class2colors = {"all":"#714bb4"};
+  var key2colors = {};
+
+  // get the tooltip div
+  var tooltipDiv = document.getElementById("tooltipDiv");
+
+  function allowDrop(event) {
+    event.preventDefault();
+    /* The default handling is to not allow dropping elements. */
+    /* Here we allow it by preventing the default behaviour. */
+  }
+
+  function drop(event) {
+    event.preventDefault();
+    /* The default handling is not to process a drop action and hand it to the next 
+       higher html element in your DOM. */
+    /* Here, we prevent the default behaviour in order to process the event within 
+       this handler and to stop further propagation of the event. */
+    /* In the drag event, we set the *variable* (it is not a variable name but a 
+       format, please check the reference!) "text/html", now we read it out */
+    el = event.target.getElementsByClassName("avail_command")[0];
+    data = el.childNodes[0]
+    console.log(el)
+    console.log(data)
+    /* As we put the ID of the source element into this variable, we can now use 
+       this ID to manipulate the dragged element as we wish. */
+    /* Let's just move it through the DOM and append it here */
+    addStep(data.data);
+  }
+
+  // set the task name
+  var currentTask = "UNKNOWN";
+
+  // set the task storage
+  var collectedTasks = {};
+
+  // get the pid
+  var pid = -100;
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  if (urlParams.has('uid')) {
+    pid = urlParams.get('uid');
+  }
+
+  // store how many tasks the user has submitted
+  var taskNo = 1;
+  var numTasks = 3; 
+
+  var scenarios = Object.keys(scenario_dict);
+
+  // initialize with a random first task
+  var completedScenarios = [];
+  var randomIndex = Math.floor(Math.random()*(scenarios.length)); // otherwise would be minus 1 to avoid the attn check
+  var prompt_text = document.getElementById("prompt_text");
+  console.log(randomIndex);
+  console.log(scenario_dict);
+  console.log(scenarios[randomIndex]);
+  scenario_info = scenario_dict[scenarios[randomIndex]];
+  scenario_text = scenario_info["prompt"];
+  currentTask = scenarios[randomIndex];
+  scenario_id = scenario_info["svg"];
+  prompt_text.innerHTML = scenario_text;
+  completedScenarios.push(randomIndex);
+
+  // keep track of the possible entities that can be used to parameterize
+  var avail_entities = [];
+
+  // hide everything else (except for "base")
+  window.addEventListener("load", function() {
+    loadGraphic(scenario_id);
+  });
+  
+  // Get a reference to the database service
+  // Along the way, pull an available participant ID AS A BACKUP
+  try {
+    var database = firebase.database();
+
+    /*
+    if (pid < 0) {
+      firebase.database().ref("participants/p_count").get().then(function(snapshot) {
+        if (snapshot.exists()) {
+
+          // get the pid
+          console.log("pid")
+          console.log(pid)
+          pid = snapshot.val();
+          console.log(pid)
+
+          // update the pid
+          firebase.database().ref("participants").set({
+            "p_count": (pid+1)
+          });
+        }
+        else {
+          console.log("No data available");
+        }
+      }).catch(function(error) {
+        console.error(error);
+      });
+    }
+    */
+  }
+  catch(err) {
+    console.log("could not access firebase")
+  }
+
+  // create the tab div
+  var tabs = document.getElementById("avail_step_container");
+  var tabWrapper = document.createElement("div");
+  tabWrapper.className = "tab_wrapper";
+  tabs.appendChild(tabWrapper);
+  var tabTop = document.createElement("div");
+  tabTop.className = "tab_top";
+  tabWrapper.appendChild(tabTop);
+
+  // setup the colors first
+  var commands = input;
+  Object.keys(commands).forEach(function(key) {
+    // get the category of the key
+    var candidate_categories = commands[key]["categories"]
+    for (var i = 0; i < candidate_categories.length; i++) {
+      var candidate_category = candidate_categories[i]
+      if (!(candidate_category in class2colors)) {
+        class2colors[candidate_category] = colors[currColor];
+        currColor += 1;
+      }
+      if (!(candidate_category == "all")) {
+        key2colors[key] = class2colors[candidate_category];
+      }
+    }
+  });
+
+  // dynamically load the commands available to the user and their respective categories
+  // do this while creating the tabs
+  var command_categories = {}
+  var all_categories = [];
+  Object.keys(commands).forEach(function(key) {
+    // get the category of the key
+    var candidate_categories = commands[key]["categories"]
+    for (var i = 0; i < candidate_categories.length; i++) {
+      var candidate_category = candidate_categories[i];
+
+      if (!(candidate_category in command_categories)) {
+        all_categories.push(candidate_category);
+
+        // create a new grid element to go under a tab once it is clicked
+        var tab = document.createElement("div")
+        tab.className = "step-grid-container";
+        tab.id = "step-grid-container";
+        command_categories[candidate_category] = tab;
+      }
+
+      // create the button element to go under each of
+      // its corresponding tabs
+      var grid_element = document.createElement("div");
+      grid_element.className = "grid-item";
+      grid_element.draggable = "true"
+      
+      grid_element.ondragstart =
+        function drag(ev) {
+          /* Here is specified what should be dragged. */
+          /* This data will be dropped at the place where the mouse button is released */
+          /* Here, we want to drag the element itself, so we set it's ID. */
+          ev.dataTransfer.setData("Text", key);
+          var g_el = ev.target
+          var b_el = g_el.getElementsByClassName("avail_command")[0];
+          var tooltip = g_el.getElementsByClassName("tooltiptext")[0];
+          ev.target.style.opacity = "0.4";
+          b_el.style.opacity = "1.0";
+          //dragStart(ev)
+        }
+      grid_element.ondragenter = 
+        function dragEnter(event) {
+          //dragEnter(event)
+        }
+      grid_element.ondragleave = 
+        function dragLeave(event) {
+          //dragLeave(event)
+        }
+
+      grid_element.ondragover = 
+        function dragOver(event) {
+          //dragOver(event)
+        }
+
+      grid_element.ondragend =
+        function drag(ev) {
+          var target = event.target;
+          console.log("DROP 2");
+          ev.target.style.opacity = "1.0";
+          drop(ev);
+        }
+      /*
+      ondragstart="dragStart(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="dragOver(event)" ondrop="drop(event)">
+      */  
+
+      // get the color of the button
+      // NOTE: this assumes that each command has 2 categories : all, and another category
+      var color = "none";
+      for (var j = 0; j < candidate_categories.length; j++) {
+        if (candidate_categories[j] != "all") {
+          color = class2colors[candidate_categories[j]];
+        }
+      }
+      console.log(color);
+
+      // now add the button
+      var button_element = document.createElement("button");
+      button_element.className="avail_command tooltip";
+      button_element.innerHTML=key;
+      button_element.style.backgroundColor = color;
+      button_element.addEventListener("click", function() {
+        addStep(key);
+      });
+
+      // add the tooltip
+      var tooltip = document.createElement("span");
+      tooltip.className = "tooltiptext";
+      tooltip.innerHTML = commands[key]["description"];
+      button_element.appendChild(tooltip);
+
+      // make the button draggable
+      button_element.onmousedown = function(event) {
+        console.log("mouse down");
+
+        // create the duplicate draggable element
+        var draggable = document.createElement("BLAH");
+      }
+
+      // change the container properties IF the tab is "all"
+      if (candidate_category == "all") {
+        button_element.style.fontSize="16px";
+        button_element.style.padding="4px 4px 4px 4px";
+      }
+
+      grid_element.appendChild(button_element);
+
+      command_categories[candidate_category].appendChild(grid_element);
+    }
+
+  });
+
+  // now create each of the tab buttons
+  // clicking these buttons brings up the available commands underneath
+  // its own category of commands
+  all_categories.forEach(function(cat) {   // iterate through all of the command categories
+    var button = document.createElement("button");
+    button.className = "tabbutton";
+    button.innerHTML = cat;
+    button.id = "tabbutton_" + cat;
+    tabTop.appendChild(button);
+    console.log(cat);
+    button.addEventListener("click", function() {
+      openTab(cat);
+    });
+
+    // add the tab button to the tab div
+    command_categories[cat].style.display = "none";
+    tabs.appendChild(command_categories[cat])
+  });
+
+  // by default select the "all" tab by default
+  openTab("all");
+
+  // listener for the done button.
+  document.getElementById("done_button").addEventListener("click", function() {
+    confirmFinishTask();
+  });
+
+  // store the timeline of commands that the user selects to perform a task
+  var command_history = [];
+  var unique_arg_id = 0;
+
+  function addStep(icon) {
+    /*
+    Function addStep:
+      - called when a command is selected by the user
+      - places a graphic of the command in the timeline
+      - places a textbox or selection box for parameter selection
+    */   
+
+    var timelineElementWrapper = document.createElement("div");
+    timelineElementWrapper.className = "timeline_element_wrapper";
+    timelineElementWrapper.style.display="inline-block";
+    var docID = icon + Math.floor(Math.random() * 100000);
+    timelineElementWrapper.id = docID;
+
+    var timelineElementGrid = document.createElement("div");
+    timelineElementGrid.className = "command_wrapper";
+    
+    var timelineElement = document.createElement("span");
+    timelineElement.className = "command";
+    timelineElement.style.backgroundColor = key2colors[icon];
+    
+    // code for delete button
+    var divDeleteButton = document.createElement("div");
+    divDeleteButton.className = "image-area";
+    divDeleteButton.innerHTML = "<a class=\"remove-image\" href=\"#\" style=\"display: inline;\">&#215;</a>";
+    divDeleteButton.addEventListener("click", function() {
+        deletecmd(docID);
+      });
+    timelineElement.appendChild(divDeleteButton);
+
+    var nameElement = document.createElement("div");
+    nameElement.innerHTML= command_history.length + ". " + icon;
+    nameElement.className = "command_label";
+    nameElement.addEventListener("click", function() {
+        collapseAndExpand(timelineElement);
+      });
+    //alert(icon);
+    nameElement.id="name";
+    timelineElement.appendChild(nameElement);
+
+    // prepare storage for arguments
+    var argStorage = []
+
+    // create a box for the arguments
+    var cmdArgBox = document.createElement("div");
+    cmdArgBox.className = "command_argbox";
+    var hasNominalArgs = false;
+
+    // iterate through all possible arguments to the command
+    for (var i = 0; i < commands[icon]["args"].length; i++) {
+      // create the storage
+      var currStorage = {};
+
+      // increase the unique command id
+      unique_arg_id += 1
+
+      var arg = commands[icon]["args"][i]
+
+      //var divWrapper = document.createElement("div");
+      var argname = document.createElement("div");
+      argname.innerHTML = arg["argname"];
+      argname.className = "arg_label";
+      cmdArgBox.appendChild(argname);
+      currStorage["argname"] = arg["argname"]
+      
+      // determine whether the arg is open-response or categorical
+      if (arg["argtype"] == "nominal") {  // categorical
+        hasNominalArgs = true;
+        var datalistInput = document.createElement("input");
+        datalistInput.setAttribute("list","argList"+unique_arg_id);
+        datalistInput.className = "arg_selector";
+        var argElement = document.createElement("datalist");
+        argElement.id = "argList"+unique_arg_id;
+        //divWrapper.appendChild(datalistInput);
+        cmdArgBox.appendChild(datalistInput);
+        currStorage["element"] = datalistInput;
+
+        var categories = arg["argopts"];
+        Object.keys(categories).forEach(function(key) {
+          for (var j=0; j<categories[key].length; j++) {
+            var optElement = document.createElement("option");
+            optElement.value=categories[key][j];
+            optElement.innerHTML=optElement.value;
+
+            // decide whether or not to add the element
+            if (avail_entities.includes(categories[key][j])) {
+              argElement.appendChild(optElement);
+            }
+          }
+        });
+
+        cmdArgBox.appendChild(argElement);
+
+        // append the storage
+        argStorage.push(currStorage);
+      }
+    }
+
+    // only add the cmdArgBox if the number of required nominal parameters is empty
+    if (hasNominalArgs) {
+      timelineElement.appendChild(cmdArgBox);
+    }
+
+    // now iterate through the non-nominal commands
+    var cmdArgBox = document.createElement("div");
+    cmdArgBox.className = "command_argbox";
+    cmdArgBox.style.gridTemplateColumns = "10% 80% 10%";
+    var hasFreeArgs = false;
+
+    // iterate through all possible arguments to the command
+    for (var i = 0; i < commands[icon]["args"].length; i++) {
+      // create the storage
+      var currStorage = {};
+
+      // increase the unique command id
+      unique_arg_id += 1
+
+      var arg = commands[icon]["args"][i]
+
+      //var divWrapper = document.createElement("div");
+      currStorage["argname"] = arg["argname"]
+      
+      // determine whether the arg is open-response or categorical
+      if (arg["argtype"] != "nominal") {  // free response
+        hasFreeArgs = true;
+        var argElement = document.createElement("input");
+        argElement.className = "arg_input";
+        argElement.type="text";
+        argElement.placeholder = "(type your exact speech)"
+        //cmdArgBox.appendChild(argElement);
+        currStorage["element"] = argElement;
+
+        // add the quotes
+        var quote1 = document.createElement("div");
+        quote1.innerHTML = "\"";
+        var quote2 = document.createElement("div");
+        quote2.innerHTML = "\"";
+        cmdArgBox.appendChild(quote1);
+        cmdArgBox.appendChild(argElement);
+        cmdArgBox.appendChild(quote2);
+
+        // append the storage
+        argStorage.push(currStorage);
+      }
+    }
+
+    // only add the cmdArgBox if the number of required free parameters is empty
+    if (hasFreeArgs) {
+      timelineElement.appendChild(cmdArgBox);
+    }
+
+    // add the description grid box
+    var descriptionGrid = document.createElement("div");
+    descriptionGrid.className = "description_grid";
+
+    // add a description label (it's a grid so that we can fit the +/- button)
+    var descriptionLabelWrapper = document.createElement("div");
+    descriptionLabelWrapper.style.display = "inline-block";
+    var descriptionLabel = document.createElement("div");
+    descriptionLabel.innerHTML = "More detail:  ";
+    descriptionLabel.className = "description_label";
+    descriptionLabelWrapper.appendChild(descriptionLabel);
+    var minmaxWrapper = document.createElement("div");
+    minmaxWrapper.className = "description_button_wrapper";
+    var minmaxButton = document.createElement("object");
+    minmaxButton.data = "contract.svg";
+    minmaxButton.className = "description_button";
+    minmaxWrapper.appendChild(minmaxButton);
+    descriptionLabelWrapper.appendChild(minmaxWrapper);
+    descriptionGrid.appendChild(descriptionLabelWrapper);
+
+    // lastly, add the textarea below which will serve as the description of the step
+    var textArea = document.createElement("textarea")
+    textArea.readonly = false;
+    textArea.className = "description_text";
+    textArea.placeholder = "You may provide more detail here as needed (not required)."
+    textArea.style.display = "inline-block";
+
+    // the description text should be able to be hidden
+    minmaxWrapper.addEventListener("click", function() {
+        showAndHideDescription(textArea,minmaxButton);
+      });
+
+    descriptionGrid.appendChild(textArea);
+
+    timelineElement.appendChild(descriptionGrid);
+    
+    // add both things to the grid -- step and arrow
+    timelineElementGrid.appendChild(timelineElement);
+    var arrow = document.createElement("object");
+    arrow.data = "arrow.svg";
+    arrow.className = "arrow";
+    timelineElementGrid.appendChild(arrow);
+
+    timelineElementWrapper.appendChild(timelineElementGrid);
+    document.getElementById("timeline").appendChild(timelineElementWrapper);
+
+    // set the scrollbar
+    var timeline = document.getElementById("timeline");
+    console.log(timeline.scrollWidth);
+    timeline.scrollLeft=timeline.scrollWidth;
+
+    /*
+    * Part 2: adding to the history 
+    */
+    var history_idx = command_history.length
+    var history_pane = document.getElementById("history");
+    var history_item = document.createElement("button");
+    history_item.className = "history_item";
+
+    // each history item will have an inner div for the icon
+    var drag_icon = document.createElement("img");
+    drag_icon.src = "arrow.png";
+    drag_icon.className = "history_item_icon";
+    history_item.appendChild(drag_icon);
+
+    // each history item will have an inner div for the label
+    var history_labels = document.createElement("div");
+    history_labels.className = "history_item_label";
+    history_labels.innerHTML = "" + history_idx + ". " + icon;
+    history_item.appendChild(history_labels);
+
+    history_item.id = docID;
+    history_item.style.backgroundColor = key2colors[icon];
+    history_item.addEventListener("click", function() {
+      shiftTimelineToStep(timelineElementWrapper);
+    });
+    history_item.draggable="true";
+    history_pane.appendChild(history_item);
+
+    history_pane.ondragover= 
+      function allowingDrop(event) {
+        allowDrop(event);
+      }
+    history_item.ondragend =
+      function drag(ev) {
+        ev.target.style.opacity = "1.0";
+        //dropHistoryItem(event);
+      }
+
+    history_item.ondragstart =
+      function dragstart(event) {
+        event.dataTransfer.setData("source",history_item.id);
+        console.log(event);
+        event.target.style.opacity = "1.0";
+      }
+
+    history_item.ondrop = 
+      function drop(event) {
+        dropHistoryItem(event);
+      }
+    history_item.ondragenter = 
+      function dragEnter(event) {
+        //dragEnter(event)
+      }
+    history_item.ondragleave = 
+      function dragLeave(event) {
+        //dragLeave(event)
+
+      }
+
+    // add the element to the array of command elements
+    command_history.push({"element":timelineElement,"args":argStorage,"history_item":history_item, "ID":docID});
+    console.log(command_history);
+  }
+
+  function writeData() {
+    /*
+    Function writeData:
+      - called after task specification is finished
+      - first thing done is create a data structure to store the task specification
+      - next thing is to write the task to the database
+    */
+    var task = []
+    for (var i = 0; i < command_history.length; i++) {
+      var name = command_history[i]["element"].querySelectorAll(".command_label")[0].innerHTML;
+      var description_container = command_history[i]["element"].querySelectorAll(".description_grid")[0];
+      var description = description_container.querySelectorAll(".description_text")[0];
+      var cmd_data_dict = {"name":name}
+      cmd_data_dict["description"] = description.value
+      cmd_data_dict["args"] = []
+
+      // clear the timeline
+      var arg = command_history[i]["args"]
+      console.log(command_history[i]["args"]);
+      for (var j = 0; j < arg.length; j++) {
+        var argname = arg[j]["argname"];
+
+        var selectVal = arg[j]["element"]
+        console.log("SELECTVAL");
+        console.log(selectVal);
+        if (selectVal.className == "arg_selector") {
+          //cmd_data_dict["args"].push({"argname":argname[0].innerHTML,"argval":argval[0].options[argval[0].selectedIndex].value});
+          cmd_data_dict["args"].push({"argname":argname,"argval":selectVal.value});
+        }
+
+        else if (selectVal.className == "arg_input") {
+          cmd_data_dict["args"].push({"argname":argname,"argval":selectVal.value});
+        }
+
+        // if no arg specification, add "unspecified"
+        else {
+          cmd_data_dict["args"].push({"argname":argname,"argval":"unspecified"});
+        }
+      }
+
+      task.push(cmd_data_dict);
+    }
+
+    // store the collected task
+    if (!(currentTask in collectedTasks)) {
+      collectedTasks[currentTask] = [];
+    }
+
+    collectedTasks[currentTask].push(task);
+
+    var d = new Date();
+
+    try {
+      firebase.database().ref("data/" + pid).set({
+        command_history: collectedTasks,
+        time: d.getTime()
+      });
+    }
+    catch(err) {
+      console.log("could not write to firebase")
+    }
+  }
+
+  function openTab(tabID) {
+    /*
+    Function openTab
+      - responds to a click of a particular category in the available steps pane
+      - opens the set of commands corresponding to the clicked category
+    */
+    console.log(tabID)
+    for (var i = 0; i < all_categories.length; i++) {
+      command_categories[all_categories[i]].style.display = "none";
+    }
+    command_categories[tabID].style.display = "grid";
+
+    // set all of the tabbuttons to inactive
+    var tabButtons = document.getElementsByClassName("tabbutton");
+    for (i = 0; i < tabButtons.length; i++) {
+      tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+    }
+
+    // set the correct tabbutton to active
+    var focusedButton = document.getElementById("tabbutton_" + tabID);
+    focusedButton.className = focusedButton.className + " active";
+  }
+
+  function confirmFinishTask() {
+    var r;
+    if (taskNo >= numTasks) {
+      r = confirm("Would you like to submit your work and conclude the study? You won't be able to make any changes to your current work.");
+    }
+    else {
+      r = confirm("Would you like to submit your work and move on to the next task? You won't be able to make any changes to your current work.");
+    }
+    if (r == true) {
+      finishTask();
+    } 
+  }
+
+  function finishTask() {
+    /*
+    Function finishTask:
+      - called when done button is selected
+      - save the data and reset the timeline
+    */
+    writeData();
+
+    // decide on whether or not to reset
+    if (taskNo == numTasks) {
+      window.location.href = "thankyou.html?uid="+pid;
+    }
+    // attn check -- disabled.
+    else if (false) {//(taskNo == Math.floor(numTasks/2)) {
+      taskNo = taskNo + 1;
+      nextScenario = scenarios.length - 1;
+      scenario_info = scenario_dict[scenarios[nextScenario]];
+      scenario_text = scenario_info["prompt"];
+      scenario_id = scenario_info["svg"];
+      currentTask = scenarios[nextScenario];
+      prompt_text.innerHTML = scenario_text;
+      completedScenarios.push(nextScenario);
+      reset();
+      loadGraphic(scenario_id);
+    }
+    else {
+      taskNo = taskNo + 1;
+      var nextScenario = -1;
+      while ((nextScenario == -1 || completedScenarios.includes(nextScenario)) && completedScenarios != scenarios) {
+        nextScenario = Math.floor(Math.random()*scenarios.length); // otherwise would be minus 1 to avoid the attn check
+      }
+      scenario_info = scenario_dict[scenarios[nextScenario]];
+      currentTask = scenarios[nextScenario];
+      scenario_text = scenario_info["prompt"];
+      scenario_id = scenario_info["svg"];
+      prompt_text.innerHTML = scenario_text;
+      completedScenarios.push(nextScenario);
+
+      // update the task counter
+      task_counter = document.getElementById("task_counter");
+      task_counter.innerHTML = "Task " + taskNo + "/3";
+      prompt_label = document.getElementById("prompt_label");
+      prompt_label.innerHTML = "Prompt (Task " + taskNo + " out of 3)";
+
+      reset();
+      loadGraphic(scenario_id);
+    }
+  }
+  // function for deleting the timelineElement selected
+  function deletecmd(key) {
+
+    var x = document.querySelectorAll(".timeline_element_wrapper");
+    var i = 0;
+    while (i < x.length) {
+      if(x[i].id == key) {
+        x[i].remove();
+      }
+      i++;
+    }
+
+    var x = document.querySelectorAll(".history_item");
+    i = 0;
+    while (i < x.length) {
+      if(x[i].id == key) {
+        x[i].remove();
+      }
+      i++;
+    }
+  
+    // fix all the numbering, ensure that the command_history is representative
+    var x = document.querySelectorAll(".history_item_label");
+    for (var i = 0; i < x.length; i++) {
+      var inner = x[i].innerHTML;
+      inner = inner.substring(inner.indexOf(".")+2)
+      x[i].innerHTML = "" + i + ". " + inner;
+    }
+
+    i = 0;
+    while (i < command_history.length) {
+      cmd = command_history[i];
+      if (cmd["ID"] == key) {
+        command_history.splice(i,1);
+      }
+      i++;
+    }
+
+    // fix the numbering on the cards
+    for (var i = 0; i < command_history.length; i++) {
+      command = command_history[i]["element"];
+      command_label = undefined;
+      for (var j = 0; j < command.childNodes.length; j++) {
+        el = command.childNodes[j];
+        if (el.id == "name") {
+          command_label = el;
+        }
+      }
+      var name = command_label.innerHTML;
+      name = name.substring(name.indexOf(" ")+1);
+      command_label.innerHTML = i + ". " + name;
+    }
+  }
+
+  function reset() {
+    /*
+    Function reset:
+      - clear the timeline
+    */
+
+    // clear the command history
+    command_history.length = 0;
+
+    // clear the timeline
+    var x = document.querySelectorAll(".timeline_element_wrapper");
+    for (var i = 0; i < x.length; i++) {
+      x[i].remove();
+    }
+    
+    // clear the history
+    var x = document.querySelectorAll(".history_item");
+    for (var i = 0; i < x.length; i++) {
+      x[i].remove();
+    }
+  }
+    
+function dragstepStart(event) {
+  event.dataTransfer.setData("Text", event.target.id);
+}
+
+/*function dragstepEnter(event) {
+    if (event.target.className == "step") {
+        var target = event.target
+        var elements = target.getElementsByClassName("command")
+        var element = elements[0]
+        element.style.border = "3px dotted red";
+      }
+}
+
+function dragstepLeave(event) {
+    if (event.target.className == "step") {
+        event.target.style.border = "";
+      }
+}*/
+
+function dragstepOver(event) {
+  if (event.target.className == "step") {
+    event.preventDefault();
+  }
+}
+
+function dropstep(event) {
+  console.log(event);
+  console.log(event.offsetX + "  " + event.offsetY);
+    /*
+    var target = event.target
+
+
+    event.preventDefault();
+    var data = event.dataTransfer.getData("Text");  //this is the id of the element being dragged
+    var dragged = document.getElementById(data);  //this is the element being dragged
+    var timeline = document.getElementById("timeline")
+    timeline.insertBefore(dragged, target);
+    target.style.border = "";
+    */
+}
+
+function loadGraphicHelper(scenarioElement) {
+  var circleElements = scenarioElement.querySelectorAll(".dot");
+
+  for (var j = 0; j < circleElements.length; j++) {
+    console.log(circleElements[j].className.baseVal);
+    var class_names = circleElements[j].className.baseVal.split(" ");
+    for (var k = 0; k < class_names.length; k++) {
+      if ( class_names[k] != "dot" && !class_names[k].startsWith("st") ) {
+        param_item = class_names[k].replace(/_/g," ");
+        avail_entities.push(param_item);
+      }
+    }
+  }
+}
+
+function loadGraphic(scenario_id) {
+
+  // wipe the avail parameterizables
+  avail_entities = [];
+
+  console.log("SCENARIO ID " + scenario_id);
+  var svg = document.getElementById('svg');
+  console.log(svg);
+  var svgDoc = svg.contentDocument;
+  console.log(svgDoc);
+  var scenarioElements = svgDoc.querySelectorAll(".scenario");
+  for (var i = 0; i < scenarioElements.length; i++) {
+    
+    // reactivate all dots first
+    scenarioElements[i].style.display = "block";
+
+    if (scenarioElements[i].id != "Base") {
+
+      if (scenarioElements[i].id != scenario_id) {
+        scenarioElements[i].style.display = "none";
+      }
+
+      // the entities will remain. Add them all
+      else {
+        loadGraphicHelper(scenarioElements[i]);
+      }
+
+    }
+
+    // it is the base -- re-add all entities
+    else {
+      loadGraphicHelper(scenarioElements[i]);
+    }
+  }
+
+  // get reference to the non-mail entry dot
+  var nonMailEntry = svgDoc.querySelectorAll(".base_entrance")[0];
+  if (scenario_id == "Mail") {
+    nonMailEntry.style.display = "none";
+  }
+  else {
+    nonMailEntry.style.display = "block";
+  }
+
+  // get reference to the non-grocery car dot
+  var nonGroceryCar = svgDoc.querySelectorAll(".base_car")[0];
+  if (scenario_id == "Shopping") {
+    nonGroceryCar.style.display = "none";
+  }
+  else {
+    nonGroceryCar.style.display = "block";
+  }
+
+  // get reference to the non-key bedside table dot
+  var nonKeyTable = svgDoc.querySelectorAll(".base_bedside")[0];
+  if (scenario_id == "Keys") {
+    nonKeyTable.style.display = "none";
+  }
+  else {
+    nonKeyTable.style.display = "block";
+  }
+
+  // get reference to non-hosts kitchen cabinets
+  var nonHostCabinets = svgDoc.querySelectorAll(".base_kitchen_cabinets")[0];
+  if (scenario_id == "GoodHost") {
+    console.log("SDFSDSHFLKJSHDFL");
+    nonHostCabinets.style.display = "none";
+  }
+  else {
+    nonHostCabinets.style.display = "block";
+  }
+
+  // get reference to non-host refridgerator
+  var nonHostFridge = svgDoc.querySelectorAll(".base_refridgerator")[0];
+  if (scenario_id == "GoodHost") {
+    nonHostFridge.style.display = "none";
+    console.log("sddsfdsfdsfaaaaaaaaaaaaaaaaaaa");
+  }
+  else {
+    nonHostFridge.style.display = "block";
+  }
+}
+
+var PreviousElement;
+//---mouseover element--
+function showMyTooltip(evt)
+{
+    var target = evt.target
+   if(!PreviousElement||PreviousElement!=target) //--prevent 'stutter'---
+   {
+        if(PreviousElement) //---remove highlight (stroke) ---
+            PreviousElement.setAttribute('stroke-width',0)
+
+        target.setAttribute('stroke-width',3)
+        var myData=target.getAttribute("data")
+
+        tooltipDiv.innerHTML=myData
+
+        var x = evt.clientX;
+        var y = evt.clientY;
+
+        var scrollX = window.pageXOffset
+        var scrollY = window.pageYOffset
+
+        var divLeft=x+5+scrollX+"px"
+        var divTop=y+5+scrollY+"px"
+
+        tooltipDiv.style.left=divLeft
+        tooltipDiv.style.top=divTop
+        tooltipDiv.style.visibility="visible"
+        PreviousElement=target
+  }
+}
+
+function collapseAndExpand(timelineElement) {
+  console.log("dead method");
+  return;
+  console.log(timelineElement);
+  var gridElement = timelineElement.parentElement;
+
+  var cmd_argbox = timelineElement.querySelectorAll(".command_argbox")[0];
+  var desc_grid = timelineElement.querySelectorAll(".description_grid")[0];
+  var name = timelineElement.querySelectorAll(".command_label")[0];
+  console.log(name);
+  arrow = gridElement.querySelectorAll(".arrow")[0];
+  if (cmd_argbox.style.display != "none") {
+    cmd_argbox.style.display = "none";
+    desc_grid.style.display = "none";
+    arrow.style.maxHeight = "1000px";
+    name.style.paddingRight = "20px";
+  }
+  else {
+    cmd_argbox.style.display = "grid";
+    desc_grid.style.display = "grid";
+    arrow.style.maxHeight = "1000px";
+  }
+}
+
+function showAndHideDescription(descriptionTextArea,minmaxButton) {
+  if (descriptionTextArea.style.display == "none") {
+    descriptionTextArea.style.display = "inline-block";
+    minmaxButton.data = "contract.svg";
+  }
+  else {
+    descriptionTextArea.style.display = "none";
+    minmaxButton.data = "expand.svg";
+  }
+}
+
+function shiftTimelineToStep(timelineElement) {
+  // get the timeline
+  var timeline = document.getElementById("timeline");
+  // get the left position
+  var pos = timelineElement.getBoundingClientRect();
+  timelinePos = timeline.getBoundingClientRect();
+
+  console.log(timeline.scrollLeft + pos["x"]);
+
+  // do the shift
+  var timeline = document.getElementById("timeline");
+  timeline.scrollLeft=timeline.scrollLeft + (pos.x - timelinePos.x);
+}
+
+function dropHistoryItem(event) {
+  console.log("dropping")
+
+  hi_target = event.target;
+  console.log(hi_target.tagName);
+  if (hi_target.tagName == "DIV") {
+    hi_target = hi_target.parentElement;
+  }
+
+  timeline_target = "none";
+
+  var source_id = event.dataTransfer.getData("source");
+  var timeline_source = "none";
+  var h1_source = "none";
+  var source_idx = -1;
+  var target_id = -1;
+
+  for (var i=0; i < command_history.length; i++) {
+    if (source_id == command_history[i]["ID"]) {
+      timeline_source = command_history[i]["element"];
+      hi_source = command_history[i]["history_item"];
+      source_idx = i;
+    }
+
+    if (hi_target == command_history[i]["history_item"]) {
+      timeline_target = command_history[i]["element"];
+      target_idx = i;
+    }
+  }
+
+  console.log(hi_source);
+  console.log(timeline_source);
+  console.log(hi_target);
+  console.log(timeline_target);
+  console.log(source_idx);
+  console.log(target_idx);
+
+  // what event do we drop the source around
+  var target = event.target;
+
+  // do we add the source before or after the target
+  var y_offset = event.offsetY;
+  if (y_offset < 12) {
+    moveCmd(hi_source,timeline_source,hi_target,timeline_target,source_idx,target_idx,"before")
+  }
+  else if (y_offset >= 12) {
+    moveCmd(hi_source,timeline_source,hi_target,timeline_target,source_idx,target_idx,"after")
+  }
+
+  event.preventDefault();
+}
+
+function moveCmd(hi_source, timeline_source, hi_target, timeline_target, source_idx, target_idx, before_after) {
+  if (source_idx == target_idx) {
+    return
+  }
+  if (source_idx == target_idx + 1 && before_after == "after") {
+    return
+  }
+  if (source_idx == target_idx - 1 && before_after == "before") {
+    return
+  }
+
+  console.log(before_after);
+  var timeline = document.getElementById("timeline");
+  var history_pane = document.getElementById("history");
+
+  console.log(command_history);
+  var source = command_history[source_idx]
+  command_history.splice(source_idx,1);
+  console.log(command_history);
+
+  insertion_idx = target_idx;
+  if (source_idx < target_idx) {
+
+    if (before_after == "before") {
+      command_history.splice(target_idx-1,0,source)
+    } else {
+      command_history.splice(target_idx,0,source)
+    }
+  } else {
+
+    if (before_after == "before") {
+      command_history.splice(target_idx,0,source)
+    } else {
+      command_history.splice(target_idx+1,0,source)
+    }
+
+  }
+  console.log(command_history);
+
+  timeline.innerHTML = "";
+  history_pane.innerHTML = "";
+  for (var i = 0; i < command_history.length; i++) {
+    history_pane.appendChild(command_history[i]["history_item"]);
+
+    var history_label = "";
+    console.log(command_history[i]);
+    var historyChildren = command_history[i]["history_item"].childNodes;
+    for (var j = 0; j < historyChildren.length; j++) {
+      if (historyChildren[j].className == "history_item_label") {
+        history_label = historyChildren[j];
+      }
+    } 
+    var inner = history_label.innerHTML;
+    inner = inner.substring(inner.indexOf(".")+2)
+    history_label.innerHTML = "" + i + ". " + inner;
+
+    var timelineElementWrapper = document.createElement("div");
+    timelineElementWrapper.className = "timeline_element_wrapper";
+    timelineElementWrapper.style.display="inline-block";
+    var docID = command_history[i]["ID"];
+    timelineElementWrapper.id = docID;
+
+    var timelineElementGrid = document.createElement("div");
+    timelineElementGrid.className = "command_wrapper";
+
+    // change the name of the element
+    command = command_history[i]["element"];
+    command_label = undefined;
+    for (var j = 0; j < command.childNodes.length; j++) {
+      el = command.childNodes[j];
+      if (el.id == "name") {
+        command_label = el;
+      }
+    }
+    var name = command_label.innerHTML;
+    name = name.substring(name.indexOf(" ")+1);
+    command_label.innerHTML = i + ". " + name;
+
+    // add both things to the grid -- step and arrow
+    timelineElementGrid.appendChild(command_history[i]["element"]);
+    var arrow = document.createElement("object");
+    arrow.data = "arrow.svg";
+    arrow.className = "arrow";
+    timelineElementGrid.appendChild(arrow);
+
+    timelineElementWrapper.appendChild(timelineElementGrid);
+    document.getElementById("timeline").appendChild(timelineElementWrapper);
+  }
+
+
+}
+
+</script>
