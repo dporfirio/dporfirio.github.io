@@ -35,6 +35,7 @@ h3, h4, h5, h6 {
   font-weight: 500;
 }
 
+* {-webkit-font-smoothing: antialiased;}
 bemph {
   font-weight: bold;
   font-style: italic;
