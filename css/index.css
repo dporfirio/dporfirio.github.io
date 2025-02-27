@@ -6,9 +6,12 @@ body {
   font-weight:400;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color:#222;
+h1, h3, h4, h5, h6 {
   margin:0 0 20px;
+}
+
+h2 {
+  margin:0 0 0px;
 }
 
 p, ul, ol, table, pre, dl {
@@ -25,13 +28,16 @@ h1 {
 }
 
 h2 {
-  color:#393939;
   font-weight: 500;
 }
 
 h3, h4, h5, h6 {
-  color:#494949;
   font-weight: 500;
+}
+
+bemph {
+  font-weight: bold;
+  font-style: italic;
 }
 
 a {
