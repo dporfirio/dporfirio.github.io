@@ -2,7 +2,7 @@ body {
   background-color: #fff;
   padding:50px;
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  color:#595959;
+  color:#000;
   font-weight:400;
 }
 
@@ -74,7 +74,7 @@ a:hover small {
 }
 
 .wrapper {
-  width:860px;
+  width:950px;
   margin:0 auto;
 }
 
@@ -190,7 +190,7 @@ header ul a strong {
 }
 
 section {
-  width:500px;
+  max-width:650px;
   float:right;
   padding-bottom:50px;
 }
